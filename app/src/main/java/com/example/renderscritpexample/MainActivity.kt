@@ -3,49 +3,42 @@ package com.example.renderscritpexample
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.renderscript.*
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnDataPass {
 
     private lateinit var rs: RenderScript
     private lateinit var script: ScriptC_invert
-    private lateinit var  orignalImage:Bitmap
+    private lateinit var orignalImage:Bitmap
     private lateinit var imageDisp: ImageView
-
-    private lateinit var seekBarContrast: SeekBar
-    private lateinit var seekBarSharp: SeekBar
-    private lateinit var seekBarBlur: SeekBar
-
-    private lateinit var contrastValueTextView: TextView
-    private lateinit var sharpValueTextView: TextView
-    private lateinit var blurValueTextView: TextView
+    private lateinit var actualBitmap : Bitmap
+    lateinit var viewPager : ViewPager2
+    lateinit var pagerAdapter : PageAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        contrastValueTextView = findViewById(R.id.ContrastValueText)
-        sharpValueTextView = findViewById(R.id.SharpValueText)
-        blurValueTextView = findViewById(R.id.BlurValueText)
+        viewPager = findViewById(R.id.viewPager)
 
-        seekBarContrast = findViewById(R.id.seekBar)
-        seekBarSharp = findViewById(R.id.seekBarSharpen)
-        seekBarBlur = findViewById(R.id.seekBarBlur)
-
-        SetSeekBars(seekBarContrast,seekBarSharp, seekBarBlur)
+        pagerAdapter = PageAdapter(this,3)
+        viewPager.adapter = pagerAdapter
+        TabLayoutMediator(tabLayout,viewPager){ tab, position ->
+            viewPager.setCurrentItem(tab.position,true)
+        }.attach()
 
         imageDisp = findViewById(R.id.imageView)
         orignalImage = BitmapFactory.decodeResource(this.resources,R.drawable.kwiaty)
         imageDisp.setImageBitmap(orignalImage)
+        actualBitmap = (imageDisp.drawable as BitmapDrawable).bitmap
 
         rs = RenderScript.create(this);
         script  = ScriptC_invert(rs)
@@ -70,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         imageDisp.setImageBitmap(invertBitmap(img))
     }
 
-    fun SharpImage(bitmap: Bitmap,sharpFactor:Int):Bitmap{
+    private fun SharpImage(bitmap: Bitmap,sharpFactor:Int):Bitmap{
         val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
         val tmpIn = Allocation.createFromBitmap(rs,bitmap)
         val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
@@ -82,12 +75,10 @@ class MainActivity : AppCompatActivity() {
             -sharpFactor.toFloat(), 1 + 4 * sharpFactor.toFloat(), - sharpFactor.toFloat(),
             0.0f,-sharpFactor.toFloat(),0.0f)
 
-
         sharp.setInput(tmpIn)
         sharp.setCoefficients(matrixSharpen)
         sharp.forEach(tmpOut)
         tmpOut.copyTo(outputBitmap)
-
 
         tmpIn.destroy()
         tmpOut.destroy()
@@ -95,7 +86,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun BlurImage(bitmap: Bitmap,blurFactor:Int): Bitmap {
+    private fun BlurImage(bitmap: Bitmap,blurFactor:Int): Bitmap {
 
         val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
         val tmpIn = Allocation.createFromBitmap(rs,bitmap)
@@ -110,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         return outputBitmap
     }
 
-    fun contras(bitmap: Bitmap,contrast: Float) : Bitmap{
+    private fun ContrastImage(bitmap: Bitmap, contrast: Float) : Bitmap{
         val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
         val tmpIn = Allocation.createFromBitmap(rs,bitmap)
         val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
@@ -131,68 +122,23 @@ class MainActivity : AppCompatActivity() {
         imageDisp.setImageBitmap(orignalImage)
     }
 
-
-    fun SetSeekBars(seekBarContrast: SeekBar,seekBarSharp: SeekBar,seekBarBlur: SeekBar){
-        seekBarContrast.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seek: SeekBar?, progress: Int, fromUser: Boolean) {
-                contrastValueTextView.text = progress.toString()
-
-                var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
-
-                imageDisp.setImageBitmap(contras(img,progress.toFloat()))
-
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-            }
-        }
-        )
-
-        seekBarBlur.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seek: SeekBar?, progress: Int, fromUser: Boolean) {
-               blurValueTextView.text = progress.toString()
-
-                var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
-
-                if(progress != 0){
-                    imageDisp.setImageBitmap(BlurImage(img,progress))
-                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-            }
-        }
-        )
-
-        seekBarSharp.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seek: SeekBar?, progress: Int, fromUser: Boolean) {
-                sharpValueTextView.text = progress.toString()
-
-                var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
-
-                if(progress != 0){
-                    imageDisp.setImageBitmap(SharpImage(img,(progress / 10)))
-                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-            }
-        }
-        )
+    override fun onContrastPass(value: Int) {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(ContrastImage(img,value.toFloat()))
     }
+
+    override fun onSharpenPass(value: Int) {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(SharpImage(img,value))
+    }
+
+    override fun onBlurPass(value: Int) {
+        if (value != 0){
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(BlurImage(img,value))
+        }
+    }
+
+
+
 }

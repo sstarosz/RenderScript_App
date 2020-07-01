@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdjustmentsTab">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textViewContrast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Contrast"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <SeekBar
+                android:id="@+id/seekBarContrast"
+                android:layout_width="265dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="@+id/textViewContrast"
+                app:layout_constraintTop_toBottomOf="@+id/textViewContrast" />
+
+            <TextView
+                android:id="@+id/textViewContrastValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="00"
+                app:layout_constraintStart_toEndOf="@+id/seekBarContrast"
+                app:layout_constraintTop_toTopOf="@+id/seekBarContrast" />
+
+            <TextView
+                android:id="@+id/textViewSharpen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Sharpen"
+                app:layout_constraintStart_toStartOf="@+id/seekBarContrast"
+                app:layout_constraintTop_toBottomOf="@+id/seekBarContrast" />
+
+            <SeekBar
+                android:id="@+id/seekBarSharpen"
+                android:layout_width="265dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="@+id/textViewSharpen"
+                app:layout_constraintTop_toBottomOf="@+id/textViewSharpen" />
+
+            <TextView
+                android:id="@+id/textViewSharpenValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="00"
+                app:layout_constraintStart_toEndOf="@+id/seekBarSharpen"
+                app:layout_constraintTop_toTopOf="@+id/seekBarSharpen" />
+
+            <TextView
+                android:id="@+id/textViewBlur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Blur"
+                app:layout_constraintStart_toStartOf="@+id/seekBarSharpen"
+                app:layout_constraintTop_toBottomOf="@+id/seekBarSharpen" />
+
+            <SeekBar
+                android:id="@+id/seekBarBlur"
+                android:layout_width="265dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="@+id/textViewBlur"
+                app:layout_constraintTop_toBottomOf="@+id/textViewBlur" />
+
+
+            <TextView
+                android:id="@+id/textViewBlurValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="00"
+                app:layout_constraintStart_toEndOf="@+id/seekBarBlur"
+                app:layout_constraintTop_toTopOf="@+id/seekBarBlur" />
+
+            <TextView
+                android:id="@+id/textViewBrighter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Brightness"
+                app:layout_constraintStart_toStartOf="@+id/seekBarBlur"
+                app:layout_constraintTop_toBottomOf="@+id/seekBarBlur" />
+
+            <SeekBar
+                android:id="@+id/seekBarBrighter"
+                android:layout_width="265dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="@+id/textViewBrighter"
+                app:layout_constraintTop_toBottomOf="@+id/textViewBrighter" />
+
+            <TextView
+                android:id="@+id/textViewBrightnessValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="00"
+                app:layout_constraintStart_toEndOf="@+id/seekBarBrighter"
+                app:layout_constraintTop_toTopOf="@+id/seekBarBrighter" />
+
+            <TextView
+                android:id="@+id/textViewBrighterValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                tools:layout_editor_absoluteX="323dp"
+                tools:layout_editor_absoluteY="209dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</RelativeLayout>

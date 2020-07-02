@@ -2,12 +2,13 @@ package com.example.renderscritpexample
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.renderscript.*
 import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,7 +16,18 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity(), OnDataPass {
 
     private lateinit var rs: RenderScript
-    private lateinit var script: ScriptC_invert
+
+    private lateinit var scriptcInvert: ScriptC_invert
+    private lateinit var scriptGreyscale : ScriptC_grayscale
+    private lateinit var scriptContrast : ScriptC_contrast
+    private lateinit var scriptcNoise: ScriptC_noise
+    private lateinit var scriptcBright: ScriptC_bright
+    private lateinit var scriptFlip : ScriptC_flip
+    private lateinit var scriptMosaic : ScriptC_mosaicFilter
+    private lateinit var scriptcOilpaint: ScriptC_oilpaint
+    private lateinit var scriptcRelieffilter: ScriptC_reliefFilter
+    private lateinit var scriptcVignettefilter: ScriptC_vignetteFilter
+
     private lateinit var orignalImage:Bitmap
     private lateinit var imageDisp: ImageView
     private lateinit var actualBitmap : Bitmap
@@ -31,7 +43,13 @@ class MainActivity : AppCompatActivity(), OnDataPass {
 
         pagerAdapter = PageAdapter(this,3)
         viewPager.adapter = pagerAdapter
+
         TabLayoutMediator(tabLayout,viewPager){ tab, position ->
+            when(position){
+                0->tab.text = "Adjusments"
+                1->tab.text = "Filters"
+                2->tab.text = "Options"
+            }
             viewPager.setCurrentItem(tab.position,true)
         }.attach()
 
@@ -41,26 +59,117 @@ class MainActivity : AppCompatActivity(), OnDataPass {
         actualBitmap = (imageDisp.drawable as BitmapDrawable).bitmap
 
         rs = RenderScript.create(this);
-        script  = ScriptC_invert(rs)
+        scriptcInvert  = ScriptC_invert(rs)
+        scriptGreyscale = ScriptC_grayscale(rs)
+        scriptContrast = ScriptC_contrast(rs)
+        scriptcNoise = ScriptC_noise(rs)
+        scriptcBright = ScriptC_bright(rs)
+        scriptFlip = ScriptC_flip(rs)
+        scriptMosaic = ScriptC_mosaicFilter(rs)
+        scriptcOilpaint = ScriptC_oilpaint(rs)
+        scriptcRelieffilter = ScriptC_reliefFilter(rs)
+        scriptcVignettefilter = ScriptC_vignetteFilter(rs)
     }
 
-    private fun invertBitmap(bitmap: Bitmap): Bitmap{
+    fun onClickReset(view: View) {
+        orignalImage = BitmapFactory.decodeResource(this.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(orignalImage)
+    }
+    override fun onContrastPass(value: Int) {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(ContrastImage(img,value.toFloat()))
+    }
+    override fun onSharpenPass(value: Int) {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(SharpImage(img,value))
+    }
+    override fun onBrightPass(value: Int) {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(BrightImage(img,value))
+    }
+    override fun invert() {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(invertBitmap(img))
+    }
+    override fun onBlurPass(value: Int) {
+        if (value != 0){
+            var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+            imageDisp.setImageBitmap(BlurImage(img,value))
+        }
+    }
+    override fun greyscale() {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(greyScaleImage(img))
+    }
+    override fun addNoise() {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(Noise(img))
+    }
 
+    override fun flip() {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(FlipImage(img))
+    }
+
+    override fun mosaic() {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(MosaicImage(img))
+    }
+
+    override fun oilpaint() {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(OilpaintImage(img))
+    }
+
+    override fun vignette() {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(VignetteImage(img))
+    }
+
+    override fun reflief() {
+        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
+        imageDisp.setImageBitmap(RefliefImage(img))
+    }
+
+
+    private fun greyScaleImage(bitmap: Bitmap) : Bitmap{
+        val inputAllocation: Allocation = Allocation.createFromBitmapResource(
+            rs,
+            resources,
+            R.drawable.kwiaty
+        )
+        val outputAllocation: Allocation = Allocation.createTyped(
+            rs,
+            inputAllocation.type,
+            Allocation.USAGE_SCRIPT
+        )
+
+        scriptGreyscale.invoke_process(inputAllocation, outputAllocation)
+
+        outputAllocation.copyTo(bitmap)
+        return bitmap
+    }
+
+    private fun Noise(bitmap: Bitmap) : Bitmap{
         val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
         val tmpIn = Allocation.createFromBitmap(rs,bitmap)
         val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
 
         tmpIn.copyFrom(bitmap)
-        script.forEach_invert(tmpIn,tmpOut)
+        scriptcNoise.forEach_Noise(tmpIn,tmpOut)
         tmpOut.copyTo(outputBitmap)
         return  outputBitmap
     }
 
-    fun onInvertButtonClick(view: View) {
-        var drawable: BitmapDrawable =  imageView.drawable as BitmapDrawable
-        var img: Bitmap = drawable.bitmap
+    private fun invertBitmap(bitmap: Bitmap): Bitmap{
+        val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
+        val tmpIn = Allocation.createFromBitmap(rs,bitmap)
+        val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
 
-        imageDisp.setImageBitmap(invertBitmap(img))
+        tmpIn.copyFrom(bitmap)
+        scriptcInvert.forEach_invert(tmpIn,tmpOut)
+        tmpOut.copyTo(outputBitmap)
+        return  outputBitmap
     }
 
     private fun SharpImage(bitmap: Bitmap,sharpFactor:Int):Bitmap{
@@ -85,7 +194,6 @@ class MainActivity : AppCompatActivity(), OnDataPass {
         return outputBitmap
     }
 
-
     private fun BlurImage(bitmap: Bitmap,blurFactor:Int): Bitmap {
 
         val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
@@ -105,40 +213,104 @@ class MainActivity : AppCompatActivity(), OnDataPass {
         val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
         val tmpIn = Allocation.createFromBitmap(rs,bitmap)
         val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
-
-        var  script2  = ScriptC_contrast(rs)
-        script2.set_contrastFactor(contrast)
-
+        scriptContrast._contrastFactor = contrast
 
         tmpIn.copyFrom(bitmap)
-        script2.forEach_contrast(tmpIn,tmpOut)
+        scriptContrast.forEach_contrast(tmpIn,tmpOut)
         tmpOut.copyTo(outputBitmap)
 
         return  outputBitmap
     }
 
-    fun onClickReset(view: View) {
-        orignalImage = BitmapFactory.decodeResource(this.resources,R.drawable.kwiaty)
-        imageDisp.setImageBitmap(orignalImage)
+    private fun BrightImage(bitmap: Bitmap,brightFactor:Int) : Bitmap{
+        val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
+        val tmpIn = Allocation.createFromBitmap(rs,bitmap)
+        val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
+
+        scriptcBright.invoke_setBright(brightFactor.toFloat())
+        scriptcBright.forEach_exposure(tmpIn,tmpOut)
+        tmpOut.copyTo(outputBitmap)
+
+        tmpIn.destroy()
+        tmpOut.destroy()
+        return  outputBitmap
     }
 
-    override fun onContrastPass(value: Int) {
-        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
-        imageDisp.setImageBitmap(ContrastImage(img,value.toFloat()))
+    private fun FlipImage(bitmap: Bitmap) :Bitmap{
+        val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
+        val tmpIn = Allocation.createFromBitmap(rs,bitmap)
+        val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
+
+        scriptFlip.invoke_flip_setup(tmpIn,tmpOut,1)
+        scriptFlip.forEach_flip(tmpIn,tmpOut)
+        tmpOut.copyTo(outputBitmap)
+
+        tmpIn.destroy()
+        tmpOut.destroy()
+        return  outputBitmap
     }
 
-    override fun onSharpenPass(value: Int) {
-        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
-        imageDisp.setImageBitmap(SharpImage(img,value))
+    private fun MosaicImage(bitmap: Bitmap): Bitmap {
+        val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
+        val tmpIn = Allocation.createFromBitmap(rs,bitmap)
+        val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
+
+        scriptMosaic._gIn = tmpIn;
+        scriptMosaic._gIn = tmpOut;
+        scriptMosaic.invoke_setup_mosaic()
+        scriptMosaic.forEach_mosaic(tmpIn,tmpOut)
+        tmpOut.copyTo(outputBitmap)
+
+        tmpIn.destroy()
+        tmpOut.destroy()
+        return  outputBitmap
     }
 
-    override fun onBlurPass(value: Int) {
-        if (value != 0){
-        var img: Bitmap = BitmapFactory.decodeResource(this@MainActivity.resources,R.drawable.kwiaty)
-        imageDisp.setImageBitmap(BlurImage(img,value))
-        }
+    private fun VignetteImage(bitmap: Bitmap): Bitmap {
+        val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
+        val tmpIn = Allocation.createFromBitmap(rs,bitmap)
+        val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
+
+        scriptcVignettefilter.invoke_setup_vignette(tmpIn,tmpOut)
+        scriptcVignettefilter.forEach_vignetteFilter(tmpIn,tmpOut)
+        tmpOut.copyTo(outputBitmap)
+
+        tmpIn.destroy()
+        tmpOut.destroy()
+
+        return  outputBitmap
     }
 
+    private fun OilpaintImage(bitmap: Bitmap): Bitmap {
+        val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
+        val tmpIn = Allocation.createFromBitmap(rs,bitmap)
+        val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
 
+        scriptcOilpaint._gIn = tmpIn
+        scriptcOilpaint._gOut = tmpOut
+        scriptcOilpaint.invoke_setup_oilpaint()
+        scriptcOilpaint.forEach_oilpaint(tmpIn,tmpOut)
+        tmpOut.copyTo(outputBitmap)
+
+        tmpIn.destroy()
+        tmpOut.destroy()
+        return  outputBitmap
+    }
+
+    private fun RefliefImage(bitmap: Bitmap): Bitmap {
+        val outputBitmap:Bitmap = Bitmap.createBitmap(bitmap)
+        val tmpIn = Allocation.createFromBitmap(rs,bitmap)
+        val tmpOut = Allocation.createFromBitmap(rs,outputBitmap)
+
+        scriptcRelieffilter._gIn = tmpIn
+        scriptcRelieffilter._gOut = tmpOut
+        scriptcRelieffilter.invoke_setup_relief()
+        scriptcRelieffilter.forEach_relief(tmpIn,tmpOut)
+        tmpOut.copyTo(outputBitmap)
+
+        tmpIn.destroy()
+        tmpOut.destroy()
+        return  outputBitmap
+    }
 
 }

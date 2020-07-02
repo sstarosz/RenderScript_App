@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cardview_dark_background"
+    tools:context=".FiltersTab">
+
+    <Button
+        android:id="@+id/buttonInvert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Invert"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonGreyscale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Greyscale"
+        app:layout_constraintStart_toEndOf="@+id/buttonInvert"
+        app:layout_constraintTop_toTopOf="@+id/buttonInvert" />
+
+    <Button
+        android:id="@+id/buttonNoise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Noise"
+        app:layout_constraintStart_toEndOf="@+id/buttonGreyscale"
+        app:layout_constraintTop_toTopOf="@+id/buttonGreyscale" />
+
+    <Button
+        android:id="@+id/buttonFilpH"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Flip H"
+        app:layout_constraintStart_toEndOf="@+id/buttonNoise"
+        app:layout_constraintTop_toTopOf="@+id/buttonNoise" />
+
+    <Button
+        android:id="@+id/buttonRelief"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Relief"
+        app:layout_constraintStart_toEndOf="@+id/buttonPixelate"
+        app:layout_constraintTop_toTopOf="@+id/buttonPixelate" />
+
+    <Button
+        android:id="@+id/buttonOilPaint"
+        android:layout_width="101dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:text="OilPaint"
+        app:layout_constraintStart_toEndOf="@+id/buttonMosaic"
+        app:layout_constraintTop_toTopOf="@+id/buttonMosaic" />
+
+    <Button
+        android:id="@+id/buttonMosaic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Mosaic"
+        app:layout_constraintStart_toStartOf="@+id/buttonInvert"
+        app:layout_constraintTop_toBottomOf="@+id/buttonInvert" />
+
+    <Button
+        android:id="@+id/buttonPixelate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Vignette"
+        app:layout_constraintStart_toEndOf="@+id/buttonOilPaint"
+        app:layout_constraintTop_toTopOf="@+id/buttonOilPaint" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

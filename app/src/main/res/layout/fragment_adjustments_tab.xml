@@ -4,16 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cardview_shadow_start_color"
     tools:context=".AdjustmentsTab">
 
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/cardview_dark_background">
 
             <TextView
                 android:id="@+id/textViewContrast"
@@ -22,6 +25,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="Contrast"
+                android:textColor="#FFFFFF"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,6 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="00"
+                android:textColor="@color/colorWhite"
                 app:layout_constraintStart_toEndOf="@+id/seekBarContrast"
                 app:layout_constraintTop_toTopOf="@+id/seekBarContrast" />
 
@@ -48,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Sharpen"
+                android:textColor="@color/colorWhite"
                 app:layout_constraintStart_toStartOf="@+id/seekBarContrast"
                 app:layout_constraintTop_toBottomOf="@+id/seekBarContrast" />
 
@@ -65,6 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="00"
+                android:textColor="@color/colorWhite"
                 app:layout_constraintStart_toEndOf="@+id/seekBarSharpen"
                 app:layout_constraintTop_toTopOf="@+id/seekBarSharpen" />
 
@@ -74,6 +81,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Blur"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite"
                 app:layout_constraintStart_toStartOf="@+id/seekBarSharpen"
                 app:layout_constraintTop_toBottomOf="@+id/seekBarSharpen" />
 
@@ -92,6 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="00"
+                android:textColor="@color/colorWhite"
                 app:layout_constraintStart_toEndOf="@+id/seekBarBlur"
                 app:layout_constraintTop_toTopOf="@+id/seekBarBlur" />
 
@@ -101,6 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Brightness"
+                android:textColor="@color/colorWhite"
                 app:layout_constraintStart_toStartOf="@+id/seekBarBlur"
                 app:layout_constraintTop_toBottomOf="@+id/seekBarBlur" />
 
@@ -118,16 +129,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="00"
+                android:textColor="@color/colorWhite"
                 app:layout_constraintStart_toEndOf="@+id/seekBarBrighter"
                 app:layout_constraintTop_toTopOf="@+id/seekBarBrighter" />
-
-            <TextView
-                android:id="@+id/textViewBrighterValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                tools:layout_editor_absoluteX="323dp"
-                tools:layout_editor_absoluteY="209dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

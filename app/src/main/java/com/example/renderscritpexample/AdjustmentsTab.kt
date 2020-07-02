@@ -13,9 +13,13 @@ class AdjustmentsTab : Fragment() {
     private lateinit var seekBarContrast : SeekBar
     private lateinit var seekBarSharpen : SeekBar
     private lateinit var seekBarBlur : SeekBar
+    private lateinit var seekBarBright : SeekBar
+
+
     private lateinit var contrastValueTextView: TextView
     private lateinit var sharpValueTextView: TextView
     private lateinit var blurValueTextView: TextView
+    private lateinit var brightValueTextView: TextView
 
 
     lateinit var comm : OnDataPass
@@ -30,10 +34,12 @@ class AdjustmentsTab : Fragment() {
         seekBarContrast  = root.findViewById(R.id.seekBarContrast)
         seekBarSharpen  = root.findViewById(R.id.seekBarSharpen)
         seekBarBlur = root.findViewById(R.id.seekBarBlur)
+        seekBarBright = root.findViewById(R.id.seekBarBrighter)
 
         contrastValueTextView = root.findViewById(R.id.textViewContrastValue)
         sharpValueTextView = root.findViewById(R.id.textViewSharpenValue)
         blurValueTextView = root.findViewById(R.id.textViewBlurValue)
+        brightValueTextView = root.findViewById(R.id.textViewBrightnessValue)
 
         seekBarContrast.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -69,6 +75,23 @@ class AdjustmentsTab : Fragment() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 blurValueTextView.text = progress.toString()
                 comm.onBlurPass(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+        })
+
+
+        seekBarBright.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                brightValueTextView.text = progress.toString()
+                comm.onBrightPass(progress)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
